@@ -6,3 +6,8 @@ while (i > 0):
     reversed_str = reversed_str + str[i - 1]
     i -= 1
 print(f"El inverso de {str} es {reversed_str}")
+
+#Otra manera
+
+reversed_str2 = str[::-1]
+print(f"El inverso de {str} es {reversed_str2}")
