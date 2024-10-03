@@ -3,8 +3,7 @@ n = int(input("Dime un número \n"))
 if n <= 1:
     print("No es un número primo")
 else:
-    es_primo = True 
-
+    es_primo = True
     for i in range(2, n):
         if n % i == 0:
             es_primo = False
