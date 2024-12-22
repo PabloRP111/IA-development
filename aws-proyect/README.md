@@ -8,7 +8,7 @@ Este proyecto utiliza los servicios de Amazon Web Services (AWS). Sigue estas in
 
 El tema del proyecto está descrito en detalle en el siguiente documento:
 
-📄 [Ver el Subject](./Proyecto_AWS.pdf)
+📄 [Ver documentación](./Proyecto_AWS.pdf)
 
 ---
 
