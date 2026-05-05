@@ -1,6 +1,6 @@
 # 🌟 Proyecto AWS
 
-Este proyecto utiliza los servicios de Amazon Web Services (AWS). Sigue estas instrucciones para configurarlo y probarlo correctamente.
+Este proyecto utiliza los servicios de Amazon Web Services (AWS), usa buckets y autenticación mediante claves de acceso. Sigue estas instrucciones para configurarlo y probarlo correctamente.
 
 ---
 
@@ -61,9 +61,3 @@ Para probar este proyecto necesitarás tener:
    ```cmd
    python nombre-del-ejecutable.py
    ```
-
----
-
-## 🤝 Créditos
-
-Este proyecto utiliza servicios de AWS para demostrar el uso de buckets y autenticación mediante claves de acceso.
