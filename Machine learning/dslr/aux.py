@@ -1,4 +1,21 @@
 import math
+import sys
+import csv
+
+subjects = [
+        "Arithmancy",
+        "Astronomy",
+        "Herbology",
+        "Defense Against the Dark Arts",
+        "Divination",
+        "Muggle Studies",
+        "Ancient Runes",
+        "History of Magic",
+        "Transfiguration",
+        "Potions",
+        "Care of Magical Creatures",
+        "Charms",
+        "Flying"]
 
 def is_number(value):
     try:
@@ -14,7 +31,6 @@ def mean(values):
     for v in values:
         total += v
         count += 1
-    
     return total / count
 
 def minimum(values):
@@ -62,3 +78,17 @@ def percentile(values, percent):
     d1 = sorted_values[c] * (k - f)
 
     return d0 + d1
+
+def load_csv(filename):
+    try:
+        with open(filename, newline='', encoding='utf-8') as file:
+            reader = csv.DictReader(file) # Save all row as dictionary
+            return list(reader)
+    except FileNotFoundError:
+        print("Error: data.csv not found")
+        sys.exit(1)
+    except PermissionError:
+        print("Error: no permission to read data.csv")
+        sys.exit(1)
+
+    return data

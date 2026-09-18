@@ -1,26 +1,35 @@
-import csv
 import sys
 import matplotlib.pyplot as plt
-import numpy as np
+import aux
+import math
 
-subjects = [
-        "Arithmancy",
-        "Astronomy",
-        "Herbology",
-        "Defense Against the Dark Arts",
-        "Divination",
-        "Muggle Studies",
-        "Ancient Runes",
-        "History of Magic",
-        "Transfiguration",
-        "Potions",
-        "Care of Magical Creatures",
-        "Charms",
-        "Flying"]
+def get_corr_pearson(x, y):
+    mean_x = aux.mean(x)
+    mean_y = aux.mean(y)
+
+    numerator = 0
+    for i in range(len(x)):
+        dx = x[i] - mean_x
+        dy = y[i] - mean_y
+
+        numerator += dx * dy
+
+    sum_x = 0
+    for i in range(len(x)):
+        dx = x[i] - mean_x
+        sum_x += dx ** 2
+
+    sum_y = 0
+    for i in range(len(y)):
+        dy = y[i] - mean_y
+        sum_y += dy ** 2
+
+    denominator = math.sqrt(sum_x * sum_y)
+    return numerator / denominator
 
 def scatter_plot(data):
     best_corr = 0
-    best_pair = (subjects[0], subjects[1])
+    best_pair = (aux.subjects[0], aux.subjects[1])
 
     best_by_house = {
         "Gryffindor": ([], []),
@@ -29,27 +38,28 @@ def scatter_plot(data):
         "Slytherin": ([], [])
     }
 
-    for i in range(len(subjects)):
-        for j in range(i + 1, len(subjects)):
+    for i in range(len(aux.subjects)):
+        for j in range(i + 1, len(aux.subjects)):
             x = []
             y = []
 
+            # Save all the scores for two courses
             for row in data:
                 house = row["Hogwarts House"]
                 if house == "":
                     continue
 
-                if row[subjects[i]] != "" and row[subjects[j]] != "":
-                    x.append(float(row[subjects[i]]))
-                    y.append(float(row[subjects[j]]))
+                if row[aux.subjects[i]] != "" and row[aux.subjects[j]] != "":
+                    x.append(float(row[aux.subjects[i]]))
+                    y.append(float(row[aux.subjects[j]]))
 
             if len(x) < 2:
                 continue
 
-            corr = np.corrcoef(x, y)[0, 1]
+            corr = get_corr_pearson(x, y) # Calc the correlation coeficient for two courses
             if abs(corr) > best_corr:
                 best_corr = abs(corr)
-                best_pair = (subjects[i], subjects[j])
+                best_pair = (aux.subjects[i], aux.subjects[j])
 
                 # reset
                 best_by_house = {
@@ -64,12 +74,12 @@ def scatter_plot(data):
                     house = row["Hogwarts House"]
                     if house == "":
                         continue
-                    if row[subjects[i]] != "" and row[subjects[j]] != "":
-                        best_by_house[house][0].append(float(row[subjects[i]]))
-                        best_by_house[house][1].append(float(row[subjects[j]]))
+                    if row[aux.subjects[i]] != "" and row[aux.subjects[j]] != "":
+                        best_by_house[house][0].append(float(row[aux.subjects[i]]))
+                        best_by_house[house][1].append(float(row[aux.subjects[j]]))
 
-    print("Mejor par:", best_pair)
-    print("Correlación:", best_corr)
+    print("Best pair:", best_pair)
+    print("Correlation:", best_corr)
 
     for house in best_by_house:
         x, y = best_by_house[house]
@@ -81,33 +91,17 @@ def scatter_plot(data):
     plt.legend()
     plt.show()
 
-def load_csv(filename):
-    try:
-        with open(filename, newline='', encoding='utf-8') as file:
-            reader = csv.DictReader(file) # Save all row as dictionary
-            return list(reader)
-    except FileNotFoundError:
-        print("Error: data.csv not found")
-        sys.exit(1)
-    except PermissionError:
-        print("Error: no permission to read data.csv")
-        sys.exit(1)
-
-    return data
-
 def main():
-
     if len(sys.argv) != 2:
         print("Usage: python sctter_plot.py dataset.csv")
         sys.exit(1)
 
     dataset = sys.argv[1]
-
     if not dataset.lower().endswith(".csv"):
         print("Error: file must be a CSV")
         sys.exit(1)
 
-    data = load_csv(dataset)
+    data = aux.load_csv(dataset)
     scatter_plot(data)
 
 if __name__ == "__main__":

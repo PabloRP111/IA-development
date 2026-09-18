@@ -1,6 +1,6 @@
-import csv
 import sys
 import aux
+import csv
 
 def describe(data):
     stats = {}
@@ -22,7 +22,6 @@ def describe(data):
             "75%": aux.percentile(values, 0.75),
             "Max": aux.maximum(values)
         }
-
     return stats
 
 def print_stats(stats):
@@ -33,7 +32,7 @@ def print_stats(stats):
     # 1. Calc the dinamic width
     col_widths = {}
     for h in headers:
-        # Search the longest value in this colum (.6f ocupa bastantes caracteres)
+        # Search the longest value in this colum (.6f)
         max_value_len = max(len(f"{stats[h][row]:.6f}") for row in rows)
         # The width will be the maximum between the name of assignature and it´s largest value, plus an margin of 2 spaces
         col_widths[h] = max(len(h), max_value_len) + 2

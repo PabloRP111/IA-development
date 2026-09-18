@@ -1,48 +1,18 @@
-import csv
 import sys
+import aux
 import matplotlib.pyplot as plt
 import numpy as np
-
-subjects = [
-        "Arithmancy",
-        "Astronomy",
-        "Herbology",
-        "Defense Against the Dark Arts",
-        "Divination",
-        "Muggle Studies",
-        "Ancient Runes",
-        "History of Magic",
-        "Transfiguration",
-        "Potions",
-        "Care of Magical Creatures",
-        "Charms",
-        "Flying"]
-
-def compute_homogeneity(houses):
-    scores = {}
-
-    for subject in subjects:
-
-        means = []
-
-        for house in houses:
-            values = houses[house][subject]
-            means.append(sum(values) / len(values))
-
-        scores[subject] = np.std(means)
-
-    return scores
 
 def histogram(houses):
     fig, axes = plt.subplots(4, 4, figsize=(16, 12))
     axes = axes.flatten()
 
-    for i, subject in enumerate(subjects):
+    for i, subject in enumerate(aux.subjects):
         ax = axes[i]
 
         for house in houses:
             ax.hist(
-                houses[house][subject],
+                houses[house].get(subject, []), #if this house hasn´t values for this subject, .get return a empty list
                 bins=20,
                 alpha=0.5,
                 density=True,
@@ -58,6 +28,23 @@ def histogram(houses):
     plt.tight_layout()
     plt.show()
 
+def score_homogeneity(houses):
+    scores = {}
+    for subject in aux.subjects:
+        means = [aux.mean(houses[house].get(subject, [np.nan])) for house in houses]
+        stds = [np.std(houses[house].get(subject, [np.nan])) for house in houses]
+        # normalizamos por la dispersión general para comparar asignaturas distintas
+        scores[subject] = np.std(means) / aux.mean(stds)
+
+    sorted_scores = sorted(scores.items(), key=lambda x: x[1])
+    print(f"Subject | Homogeneity Score")
+
+    for subject, score in sorted_scores: 
+        print(f"{subject}: {score}")
+
+    print(f"\nThe course with more homogeneity is {sorted_scores[0][0]} "
+          f"with a score of {sorted_scores[0][1]:.4f}")
+
 def preprocesing(data):
     houses = {
         "Gryffindor": {},
@@ -67,7 +54,7 @@ def preprocesing(data):
     
     for row in data:
         house = row["Hogwarts House"]
-        for subject in subjects:
+        for subject in aux.subjects:
             value = row[subject]
 
             if value == "":
@@ -76,22 +63,7 @@ def preprocesing(data):
                 houses[house][subject] = []
             
             houses[house][subject].append(float(value))
-
     return houses
-
-def load_csv(filename):
-    try:
-        with open(filename, newline='', encoding='utf-8') as file:
-            reader = csv.DictReader(file) # Save all row as dictionary
-            return list(reader)
-    except FileNotFoundError:
-        print("Error: data.csv not found")
-        sys.exit(1)
-    except PermissionError:
-        print("Error: no permission to read data.csv")
-        sys.exit(1)
-
-    return data
 
 def main():
     if len(sys.argv) != 2:
@@ -99,13 +71,13 @@ def main():
         sys.exit(1)
 
     dataset = sys.argv[1]
-
     if not dataset.lower().endswith(".csv"):
         print("Error: file must be a CSV")
         sys.exit(1)
 
-    data = load_csv(dataset)
+    data = aux.load_csv(dataset)
     houses = preprocesing(data)
+    score_homogeneity(houses)
     histogram(houses)
 
 if __name__ == "__main__":
