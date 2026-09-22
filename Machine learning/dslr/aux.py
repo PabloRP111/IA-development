@@ -17,6 +17,13 @@ subjects = [
         "Charms",
         "Flying"]
 
+houses = [
+    "Gryffindor",
+    "Hufflepuff",
+    "Ravenclaw",
+    "Slytherin"
+]
+
 def is_number(value):
     try:
         float(value) # If is numb is casteable

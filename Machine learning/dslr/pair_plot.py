@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 import sys
 import aux
 
-
 def pair_plot(data):
     n = len(aux.subjects)
 
