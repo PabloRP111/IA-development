@@ -6,16 +6,17 @@ import numpy as np
 def sigmoid(z):
     return 1 / (1 + np.exp(-z)) # returns an array result of e^-z[x] for each position 
 
-def	cost(y_binary, prediticions):
-	m = len(y_binary)
+def cost(y_binary, predictions):
+    m = len(y_binary)
 
-	prediticions = np.clip(prediticions)
+    predictions = np.clip(predictions, 1e-15, 1 - 1e-15)
 
-	cost = -np.sum(
-		y_binary * np.log(prediticions)
-		+ (1 - y_binary) * np.load(1 - prediticions) / m
-	)
-	return cost
+    cost = -np.sum(
+        y_binary * np.log(predictions)
+        + (1 - y_binary) * np.log(1 - predictions)
+    ) / m
+
+    return cost
 
 def gradient_descent(x, y_binary, learning_rate, iterations):
 	weights = np.zeros(x.shape[1])
