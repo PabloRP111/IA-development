@@ -18,7 +18,7 @@ def cost(y_binary, predictions):
 
     return cost
 
-def gradient_descent(x, y_binary, learning_rate, iterations):
+def gradient_descent(x, y_binary, learning_rate, iterations, house):
 	weights = np.zeros(x.shape[1])
 
 	for _ in range(iterations):
@@ -27,10 +27,9 @@ def gradient_descent(x, y_binary, learning_rate, iterations):
 
 		c = cost(y_binary, predictions)
 		if _ % 100 == 0:
-			print(f"Iteration {_}: cost = {cost}")
+			print(f"Model of {house} iteration {_}: cost = {c}")
 
 		gradient = (x.T @ (predictions - y_binary)) / len(y_binary)
-
 		weights -= learning_rate * gradient
 
 	return weights
@@ -61,17 +60,19 @@ def train(data):
 			x,
 			y_binary,
 			learning_rate=0.1,
-			iterations=1000
+			iterations=1000,
+			house=house
 		)
+		print("")
 		models[house] = weights
 
-	return models
+	return models, x_mean, x_std
 
 def getData(file_n):
 	try:
 		df = pd.read_csv(file_n)
 		clean_data = df.dropna(subset=aux.subjects + ['Hogwarts House']) #Clean n/a
-		print(clean_data["Hogwarts House"].value_counts())
+		print(clean_data["Hogwarts House"].value_counts(), "\n")
 		return clean_data
 	except FileNotFoundError:
 			print("Error: .csv not found")
@@ -84,8 +85,22 @@ def main():
 	if len(sys.argv) != 2:
 		print("Error: Usage: python logreg_train.py <dataset.csv>")
 		sys.exit(1)
+
 	data = getData(sys.argv[1])
-	models = train(data)
+
+	models, x_mean, x_std = train(data)
+
+	# Save weights of the models. Also save x_mean and x_std for desnormalize
+	np.savez( 
+        "weights.npz",
+        gryffindor=models["Gryffindor"],
+        hufflepuff=models["Hufflepuff"],
+        ravenclaw=models["Ravenclaw"],
+        slytherin=models["Slytherin"],
+        mean=x_mean.to_numpy(),
+        std=x_std.to_numpy()
+    )
+	print("Models saved")
 
 if __name__ == '__main__':
     main()
