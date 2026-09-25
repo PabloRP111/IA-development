@@ -1,6 +1,7 @@
 import math
 import sys
 import csv
+import numpy as np
 
 subjects = [
         "Arithmancy",
@@ -99,3 +100,7 @@ def load_csv(filename):
         sys.exit(1)
 
     return data
+
+
+def sigmoid(z):
+    return 1 / (1 + np.exp(-z)) # returns an array result of e^-z[x] for each position 

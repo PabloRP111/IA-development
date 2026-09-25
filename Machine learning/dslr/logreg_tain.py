@@ -3,9 +3,6 @@ import pandas as pd
 import aux
 import numpy as np
 
-def sigmoid(z):
-    return 1 / (1 + np.exp(-z)) # returns an array result of e^-z[x] for each position 
-
 def cost(y_binary, predictions):
     m = len(y_binary)
 
@@ -23,7 +20,7 @@ def gradient_descent(x, y_binary, learning_rate, iterations, house):
 
 	for _ in range(iterations):
 		z = x @ weights
-		predictions = sigmoid(z)
+		predictions = aux.sigmoid(z)
 
 		c = cost(y_binary, predictions)
 		if _ % 100 == 0:
