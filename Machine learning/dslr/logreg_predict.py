@@ -58,9 +58,9 @@ def main():
 	predictions = houses[predict_indexes] #pass the array index to an array houses
 
 	# Calc acuracity
-	#real_houses = data["Hogwarts House"].to_numpy()
-	#accuracy = np.mean(predictions == real_houses)
-	#print(f"Accuracy: {accuracy * 100:.2f}%")
+	real_houses = data["Hogwarts House"].to_numpy()
+	accuracy = np.mean(predictions == real_houses)
+	print(f"Accuracy(Just in case the dataset has Hogwarts House field): {accuracy * 100:.2f}%")
 
 	#SAVE FILE
 	result = pd.DataFrame({

@@ -59,7 +59,7 @@ def maximum(values):
     
     return max_value
 
-def std_deviation(values, avg):
+def variance(values, avg):
     total = 0
     count = 0
 
@@ -67,8 +67,9 @@ def std_deviation(values, avg):
         total += (v - avg) ** 2
         count += 1
     
-    variance = total / count
+    return total / count
 
+def std_deviation(variance):
     return math.sqrt(variance)
 
 def percentile(values, percent):
@@ -87,6 +88,17 @@ def percentile(values, percent):
 
     return d0 + d1
 
+def skewness(values, avg, std):
+    if std == 0:
+        return 0
+
+    total = 0
+
+    for value in values:
+        total += ((value - avg) / std) ** 3
+
+    return total / len(values)
+
 def load_csv(filename):
     try:
         with open(filename, newline='', encoding='utf-8') as file:
@@ -100,7 +112,6 @@ def load_csv(filename):
         sys.exit(1)
 
     return data
-
 
 def sigmoid(z):
     return 1 / (1 + np.exp(-z)) # returns an array result of e^-z[x] for each position 

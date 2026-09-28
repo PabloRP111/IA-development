@@ -2,7 +2,7 @@ import sys
 import aux
 import csv
 
-def describe(data):
+def describe(data, missing):
     stats = {}
 
     for column_name, values in data.items():
@@ -11,23 +11,35 @@ def describe(data):
             continue
 
         avg = aux.mean(values)
+        variance = aux.variance(values, avg)
+        std = aux.std_deviation(variance)
+        minimum = aux.minimum(values)
+        maximum = aux.maximum(values)
+        q25 = aux.percentile(values, 0.25)
+        q75 = aux.percentile(values, 0.75)
 
         stats[column_name] = {
             "Count": len(values),
             "Mean": avg,
-            "Std": aux.std_deviation(aux.variance(values, avg)),
-            "Min": aux.minimum(values),
-            "25%": aux.percentile(values, 0.25),
+            "Variance": variance,
+            "Std": std,
+            "Missing values": missing[column_name],
+            "Min": minimum,
+            "Max": maximum,
+            "Range": maximum - minimum,
+            "25%": q25,
             "50%": aux.percentile(values, 0.50),
-            "75%": aux.percentile(values, 0.75),
-            "Max": aux.maximum(values)
+            "75%": q75,
+            "IQR": q75 - q25,
+            "Skewness": aux.skewness(values, avg, std)
         }
     return stats
 
 def print_stats(stats):
     MAX_COLS = 12
     headers = list(stats.keys())[:MAX_COLS]
-    rows = ["Count", "Mean", "Std", "Min", "25%", "50%", "75%", "Max"]
+    rows = ["Count", "Mean", "Variance", "Std", "Min", "Max", "Range", "Missing values", "25%", "50%", "75%", "IQR", "Skewness"]
+    integer_rows = ["Count", "Missing values"]
 
     # 1. Calc the dinamic width
     col_widths = {}
@@ -46,36 +58,47 @@ def print_stats(stats):
 
     # 3. Print body
     for row in rows:
-        print(f"{row:8}", end="")
+        print(f"{row:15}", end="")
+
         for h in headers:
             value = stats[h][row]
-            print(f"{value:<{col_widths[h]}.6f}", end="")
+
+            if row in integer_rows:
+                print(f"{int(value):<{col_widths[h]}}", end="")
+            else:
+                print(f"{value:<{col_widths[h]}.6f}", end="")
+
         print()
 
 def load_csv(filename):
     try:
         with open(filename, newline='', encoding='utf-8') as file:
-
-            reader = csv.DictReader(file) # Save all row as dictionary
+            reader = csv.DictReader(file)
 
             data = {}
+            missing = {}
 
             for row in reader:
                 for key, value in row.items():
 
                     if key not in data:
                         data[key] = []
+                        missing[key] = 0
 
                     if value != "" and aux.is_number(value):
                         data[key].append(float(value))
+                    else:
+                        missing[key] += 1
+
+            return data, missing
+
     except FileNotFoundError:
         print("Error: data.csv not found")
         sys.exit(1)
+
     except PermissionError:
         print("Error: no permission to read data.csv")
         sys.exit(1)
-
-    return data
 
 def main():
 
@@ -89,12 +112,11 @@ def main():
         print("Error: file must be a CSV")
         sys.exit(1)
 
-    data = load_csv(dataset)
+    data, missing = load_csv(dataset)
 
-    stats = describe(data)
+    stats = describe(data, missing)
 
     print_stats(stats)
-
 
 if __name__ == "__main__":
     main()
