@@ -54,15 +54,21 @@ def main():
     "Slytherin"
 	])
 
-	predict_indexes = np.argmax(probabilities, axis=1)
-	predictions = houses[predict_indexes]
-	print(predictions)
+	predict_indexes = np.argmax(probabilities, axis=1) #get the max value for each alumn
+	predictions = houses[predict_indexes] #pass the array index to an array houses
 
+	# Calc acuracity
+	#real_houses = data["Hogwarts House"].to_numpy()
+	#accuracy = np.mean(predictions == real_houses)
+	#print(f"Accuracy: {accuracy * 100:.2f}%")
+
+	#SAVE FILE
 	result = pd.DataFrame({
 		"Index": data["Index"],
 		"Hogwarts House": predictions
 	})
 	result.to_csv("houses.csv", index=False)
+	print("Predictions saved in the dataset houses.csv")
 
 if __name__ == '__main__':
 	main()
