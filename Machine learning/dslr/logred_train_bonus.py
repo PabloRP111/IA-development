@@ -3,10 +3,11 @@ import pandas as pd
 import aux
 import numpy as np
 
+# Calc the average error
 def cost(y_binary, predictions):
     m = len(y_binary)
 
-    predictions = np.clip(predictions, 1e-15, 1 - 1e-15)
+    predictions = np.clip(predictions, 1e-15, 1 - 1e-15) #Avoid limits 0 and 1
 
     cost = -np.sum(
         y_binary * np.log(predictions)
@@ -15,7 +16,7 @@ def cost(y_binary, predictions):
 
     return cost
 
-# Adjust the weights using one student at a time
+# Adjust the weights using all students
 def batch_gradient_descent(x, y_binary, learning_rate, epochs, house):
 	weights = np.zeros(x.shape[1])
 
@@ -27,12 +28,12 @@ def batch_gradient_descent(x, y_binary, learning_rate, epochs, house):
 		if _ % 100 == 0:
 			print(f"Model of {house} with BGD, iteration {_}: cost = {c}")
 
-		gradient = (x.T @ (predictions - y_binary)) / len(y_binary)
+		gradient = (x.T @ (predictions - y_binary)) / len(y_binary) # Look how much add all feature for the average error
 		weights -= learning_rate * gradient
 
 	return weights
 
-# Adjust the weights using a small batch of samples
+# Adjust the weights using one student at a time
 def stochastic_gradient_descent(x, y_binary, learning_rate, epochs, house):
     weights = np.zeros(x.shape[1])
 
@@ -46,7 +47,7 @@ def stochastic_gradient_descent(x, y_binary, learning_rate, epochs, house):
             z = xi @ weights
             prediction = aux.sigmoid(z)
 
-            gradient = xi * (prediction - yi)
+            gradient = xi * (prediction - yi) # Look the error for student
             weights -= learning_rate * gradient
 
         if epoch % 10 == 0:
@@ -56,7 +57,7 @@ def stochastic_gradient_descent(x, y_binary, learning_rate, epochs, house):
 
     return weights
 
-# Adjust the weights using small batches of students
+# Adjust the weights using a small batch of samples
 def mini_batch_gradient_descent(x, y_binary, learning_rate, epochs, batch_size,house):
     weights = np.zeros(x.shape[1])
 
